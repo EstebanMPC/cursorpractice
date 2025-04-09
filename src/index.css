@@ -125,10 +125,40 @@ code {
   font-size: min(10vw, 8rem);
   line-height: 1.1;
   letter-spacing: 0.05em;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.title-text.fade-in {
+  opacity: 1;
+  transform: translate(-50%, -60%);
 }
 
 .title-text div {
   display: block;
   margin: 0;
   padding: 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.title-text.fade-in div {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.title-text div:first-child {
+  transition-delay: 0.2s;
+}
+
+.title-text div:last-child {
+  transition-delay: 0.4s;
+}
+
+.title-text div span.fadeout {
+  transition: opacity 0.5s ease-out;
+}
+
+.title-text div span.fadeout.fadeout-active {
+  opacity: 0;
 }

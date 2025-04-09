@@ -36,11 +36,23 @@ function App() {
       // Apply transformations while maintaining center point
       birdImage.style.transform = `translate(calc(-50% - ${moveX}px), calc(-50% - ${moveY}px)) scale(${newSize})`;
       
-      // Fade in text when bird reaches final position
-      if (progress > 0.95) {
-        titleText.style.opacity = (progress - 0.95) * 20; // Fade in quickly at the end
+      // Fade in text more slowly (starts at 90% progress instead of 95%)
+      if (progress > 0.9) {
+        titleText.classList.add('fade-in');
       } else {
-        titleText.style.opacity = 0;
+        titleText.classList.remove('fade-in');
+      }
+
+      // Add fadeout class after scrolling 20vh
+      const fadeoutElements = document.querySelectorAll('.fadeout');
+      if (scrollPosition > window.innerHeight * 0.2) {
+        fadeoutElements.forEach(element => {
+          element.classList.add('fadeout-active');
+        });
+      } else {
+        fadeoutElements.forEach(element => {
+          element.classList.remove('fadeout-active');
+        });
       }
     };
 
@@ -60,8 +72,24 @@ function App() {
         </div>
       </nav>
       <div className="title-text">
-        <div>BIRDING</div>
-        <div>SOCIETY</div>
+        <div>
+          <span className="fadeout">B</span>
+          <span>I</span>
+          <span className="fadeout">R</span>
+          <span className="fadeout">D</span>
+          <span className="fadeout">I</span>
+          <span>N</span>
+          <span className="fadeout">G</span>
+        </div>
+        <div>
+          <span className="fadeout">S</span>
+          <span>O</span>
+          <span>C</span>
+          <span className="fadeout">I</span>
+          <span className="fadeout">E</span>
+          <span className="fadeout">T</span>
+          <span className="fadeout">Y</span>
+        </div>
       </div>
       <main className="main-content">
         <div className="bird-circle">
