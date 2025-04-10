@@ -1,0 +1,8 @@
+/* ... existing code ... */
+
+.App {
+  background-image: url("data:image/svg+xml,%3Csvg class='w-100p h-100p' x='0px' y='0px' viewBox='0 0 40.729 40.729' enable-background='new 0 0 40.729 40.729' xml:space='preserve'%3E%3Ccircle class='js-close-bg' cx='20.365' cy='20.365' r='20.365'%3E%3C/circle%3E%3Cpolygon class='js-close-lines' fill='%23FFFFFF' points='28.465,13.325 27.404,12.264 20.365,19.304 13.325,12.264 12.264,13.325 19.304,20.365 12.264,27.405 13.325,28.465 20.365,21.425 27.404,28.465 28.465,27.405 21.425,20.365 '%3E%3C/polygon%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ... existing code ... */

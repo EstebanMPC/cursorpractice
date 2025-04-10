@@ -21,6 +21,13 @@ code {
 
 .App {
   min-height: 100vh;
+  background-color: #f5f0e6;
+  background-image: url('./assets/wave.png');
+  background-repeat: repeat;
+  background-size: calc(50px + 8vw);
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .navbar {
@@ -158,60 +165,25 @@ code {
   transition-delay: 0.4s;
 }
 
-.title-text div span.fadeout {
-    transition: opacity 0.5s ease-out;
+/* Add new keyframes for exiting left */
+@keyframes exitLeft {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 0;
+    /* Move significantly left, using vw ensures it's fully off-screen */
+    transform: translate(calc(-50% - 100vw), -60%);
+  }
 }
 
-.title-text div span.fadeout.fadeout-active {
-  opacity: 0;
+/* Add a new class to trigger the exit animation */
+.title-text.exit-left {
+  /* Apply the animation */
+  /* Adjust duration (1.5s) and timing function (ease-in) as needed */
+  animation: exitLeft 1.5s ease-in forwards;
+  /* The delay before this animation starts needs to be handled in JavaScript */
+  /* For example, add this class using setTimeout after the fade-in completes */
 }
 
-/* Styles for letter switching */
-.changedirection {
-  display: flex;
-  flex-direction: row;
-  transition: transform 0.8s ease-out;
-  /* Optional: Add some spacing if needed when they swap */
-  /* gap: 0.1em; */
-}
-
-/* Target the specific spans by ID for clarity and base styles (for O/C swap) */
-#o-span, #c-span {
-  display: inline-block; /* Ensures transform works correctly */
-  transition: transform 0.5s ease-out; /* Animate the transform property for swap */
-  /* Optional: Add padding if letters feel too close */
-  /* padding: 0 0.05em; */
-}
-
-/* When changeorder is active on the FIRST span (O) - O/C SWAP */
-#o-span.changeorder {
-  transform: translateX(100%); /* Move it right by its own width */
-}
-
-/* When changeorder is active on the SECOND span (C) - O/C SWAP */
-#c-span.changeorder {
-  transform: translateX(-100%); /* Move it left by its own width */
-}
-
-/* Remove the old order rules */
-/*
-.changeorder:nth-child(1) {
-  order: 2;
-}
-
-.changeorder:nth-child(2) {
-  order: 1;
-}
-*/
-
-.society-container {
-  display: flex;
-  flex-direction: column;
-}
-
-/* --- NEW: Styles for Shift Out Animation --- */
-
-/* When shift-out is active on the title-text */
-.title-text.shift-out {
-  transform: translateX(-110vw) translate(-50%, -50%); /* Move left fully off-screen */
-}
