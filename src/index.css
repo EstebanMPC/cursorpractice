@@ -134,7 +134,10 @@ code {
 }
 
 .title-text div {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   margin: 0;
   padding: 0;
   opacity: 0;
@@ -156,9 +159,59 @@ code {
 }
 
 .title-text div span.fadeout {
-  transition: opacity 0.5s ease-out;
+    transition: opacity 0.5s ease-out;
 }
 
 .title-text div span.fadeout.fadeout-active {
   opacity: 0;
+}
+
+/* Styles for letter switching */
+.changedirection {
+  display: flex;
+  flex-direction: row;
+  transition: transform 0.8s ease-out;
+  /* Optional: Add some spacing if needed when they swap */
+  /* gap: 0.1em; */
+}
+
+/* Target the specific spans by ID for clarity and base styles (for O/C swap) */
+#o-span, #c-span {
+  display: inline-block; /* Ensures transform works correctly */
+  transition: transform 0.5s ease-out; /* Animate the transform property for swap */
+  /* Optional: Add padding if letters feel too close */
+  /* padding: 0 0.05em; */
+}
+
+/* When changeorder is active on the FIRST span (O) - O/C SWAP */
+#o-span.changeorder {
+  transform: translateX(100%); /* Move it right by its own width */
+}
+
+/* When changeorder is active on the SECOND span (C) - O/C SWAP */
+#c-span.changeorder {
+  transform: translateX(-100%); /* Move it left by its own width */
+}
+
+/* Remove the old order rules */
+/*
+.changeorder:nth-child(1) {
+  order: 2;
+}
+
+.changeorder:nth-child(2) {
+  order: 1;
+}
+*/
+
+.society-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- NEW: Styles for Shift Out Animation --- */
+
+/* When shift-out is active on the title-text */
+.title-text.shift-out {
+  transform: translateX(-110vw) translate(-50%, -50%); /* Move left fully off-screen */
 }
