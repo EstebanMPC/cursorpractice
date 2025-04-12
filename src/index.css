@@ -301,6 +301,14 @@ code {
   transition: opacity 1s ease-out, filter 1.5s ease-out;
 }
 
+.centered-border-div-outline{
+  position:absolute;
+  border-radius: 8px;
+  outline: 1000px solid #f4e6cd;
+  opacity: 0;
+  inset: 0;
+}
+
 .centered-border-div.visible {
   opacity: 1;
   filter: blur(0px);

@@ -160,11 +160,24 @@ function App() {
           if (scaleFactor < 1.6 && computerText) {
             computerText.classList.add('visible');
           }
-          // Blur out all text elements much later (e.g., when scaleFactor is below 0.5)
-          if (scaleFactor < 0.5) {
+          // Blur out all text elements when border box reaches smallest size (scaleFactor <= 1.2)
+          if (scaleFactor <= 1.2) {
             if (everythingText) everythingText.classList.add('blur-out');
             if (isText) isText.classList.add('blur-out');
             if (computerText) computerText.classList.add('blur-out');
+            // Increase opacity of centered-border-div-outline as user scrolls further
+            const outlineDiv = document.querySelector('.centered-border-div-outline');
+            if (outlineDiv) {
+              // Calculate opacity based on scroll progress after text blur-out
+              const maxOpacityScroll = viewportHeight * 3; // Keep the same range for fade-in duration
+              const scrollSinceBlur = scrollPosition - backgroundFadeOutTriggerScroll - (scrollPastTrigger / (viewportHeight * 2));
+              const linearProgress = Math.min(Math.max(scrollSinceBlur / maxOpacityScroll, 0), 1);
+              // Use a smoother curve for gradual darkening at the start
+              // Using a quadratic curve instead of square root for a more gradual initial increase
+              const opacityProgress = linearProgress * linearProgress;
+              outlineDiv.style.opacity = opacityProgress;
+              console.log('Outline opacity:', opacityProgress); // Debug log
+            }
           }
           // Show background overlay much later (e.g., when scaleFactor is below 0.6, adjusted for longer scroll)
           if (scaleFactor < 0.6 && backgroundOverlay) {
@@ -254,13 +267,13 @@ function App() {
           </div>
         </div>
         <div className="centered-border-div ">
-          <div className="fadeouttest"></div>
+          <div className="centered-border-div-outline"></div>
         </div>
         <div className="everything-text">EVERYTHING</div>
         <div className="is-text">IS</div>
         <div className="computer-text">COMPUTER</div>
       </main>
-      <div style={{ height: '500vh' }}></div>
+      <div style={{ height: '700vh' }}></div>
     </div>
   );
 }
