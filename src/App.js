@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import './index.css';
 import BirdLogo from './assets/bird-svgrepo-com.svg';
 import RoseLogo from './assets/rose-svgrepo-com.svg';
+import CardinalImage from './assets/cardinal.jpg';
 
 function App() {
   useEffect(() => {
@@ -114,15 +115,71 @@ function App() {
       // Calculate the trigger point based on the position of the welcome text element
       const welcomeTextElement = document.querySelector('.welcome-text');
       let welcomeTextTriggerScroll = viewportHeight * 0.5;
+      let backgroundFadeOutTriggerScroll = viewportHeight * 1.5; // Default fallback
       if (welcomeTextElement) {
         const rect = welcomeTextElement.getBoundingClientRect();
         welcomeTextTriggerScroll = rect.top + window.scrollY - viewportHeight * 0.3;
+        backgroundFadeOutTriggerScroll = window.scrollY + rect.top + (rect.height * 0.5);
+        console.log('Trigger Scroll:', backgroundFadeOutTriggerScroll, 'Current Scroll:', scrollPosition); // Debug log
       }
       if (welcomeText) {
         if (scrollPosition > welcomeTextTriggerScroll) {
           welcomeText.classList.add('visible');
         } else {
           welcomeText.classList.remove('visible');
+        }
+      }
+
+      // --- Background Fade Out and Image Reveal ---
+      const appElement = document.querySelector('.App');
+      const backgroundImage = document.querySelector('.background-image');
+      const borderDiv = document.querySelector('.centered-border-div');
+      const everythingText = document.querySelector('.everything-text');
+      const isText = document.querySelector('.is-text');
+      const computerText = document.querySelector('.computer-text');
+      const backgroundOverlay = document.querySelector('.background-overlay');
+      if (appElement && backgroundImage && borderDiv) {
+        if (scrollPosition > backgroundFadeOutTriggerScroll) {
+          appElement.classList.add('fade-out');
+          backgroundImage.classList.add('visible');
+          borderDiv.classList.add('visible');
+          // Calculate scaling based on scroll distance past the trigger, adjusted for longer scroll height
+          const scrollPastTrigger = scrollPosition - backgroundFadeOutTriggerScroll;
+          // Slow down the scaling reduction to account for longer scrollable area (500vh)
+          const scaleFactor = Math.max(1.2, 1.8 - (scrollPastTrigger / (viewportHeight * 2)));
+          borderDiv.style.transform = `translate(-50%, -50%) scale(${scaleFactor})`;
+          // Show 'EVERYTHING' first after the box has scaled down some
+          if (scaleFactor < 1.8 && everythingText) {
+            everythingText.classList.add('visible');
+          }
+          // Show 'IS' much sooner (e.g., when scaleFactor is below 1.7)
+          if (scaleFactor < 1.7 && isText) {
+            isText.classList.add('visible');
+          }
+          // Show 'COMPUTER' after 'IS' (e.g., when scaleFactor is below 1.6)
+          if (scaleFactor < 1.6 && computerText) {
+            computerText.classList.add('visible');
+          }
+          // Blur out all text elements much later (e.g., when scaleFactor is below 0.5)
+          if (scaleFactor < 0.5) {
+            if (everythingText) everythingText.classList.add('blur-out');
+            if (isText) isText.classList.add('blur-out');
+            if (computerText) computerText.classList.add('blur-out');
+          }
+          // Show background overlay much later (e.g., when scaleFactor is below 0.6, adjusted for longer scroll)
+          if (scaleFactor < 0.6 && backgroundOverlay) {
+            backgroundOverlay.classList.add('visible');
+          }
+          console.log('Fade out triggered', 'Scale:', scaleFactor); // Debug log
+        } else {
+          appElement.classList.remove('fade-out');
+          backgroundImage.classList.remove('visible');
+          borderDiv.classList.remove('visible');
+          borderDiv.style.transform = 'translate(-50%, -50%) scale(2.2)';
+          if (everythingText) everythingText.classList.remove('visible');
+          if (isText) isText.classList.remove('visible');
+          if (computerText) computerText.classList.remove('visible');
+          if (backgroundOverlay) backgroundOverlay.classList.remove('visible');
         }
       }
 
@@ -155,6 +212,8 @@ function App() {
   return (
     <div className="App">
       <div className="reveal-background"></div>
+      <img src={CardinalImage} alt="Cardinal Background" className="background-image" />
+      <div className="background-overlay"></div>
 
       <div id="fracture-1" className="fracture-section"></div>
       <div id="fracture-2" className="fracture-section"></div>
@@ -194,8 +253,14 @@ function App() {
             />
           </div>
         </div>
+        <div className="centered-border-div ">
+          <div className="fadeouttest"></div>
+        </div>
+        <div className="everything-text">EVERYTHING</div>
+        <div className="is-text">IS</div>
+        <div className="computer-text">COMPUTER</div>
       </main>
-      <div style={{ height: '300vh' }}></div>
+      <div style={{ height: '500vh' }}></div>
     </div>
   );
 }
