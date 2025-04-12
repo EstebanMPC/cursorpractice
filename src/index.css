@@ -117,6 +117,8 @@ code {
 }
 
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
 
 .title-text {
   position: fixed;
@@ -165,25 +167,73 @@ code {
   transition-delay: 0.4s;
 }
 
-/* Add new keyframes for exiting left */
-@keyframes exitLeft {
-  from {
-    opacity: 1;
-    transform: translate(-50%, -60%);
-  }
-  to {
-    opacity: 0;
-    /* Move significantly left, using vw ensures it's fully off-screen */
-    transform: translate(calc(-50% - 100vw), -60%);
-  }
+/* Horizontal line styles */
+.horizontal-line {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 1px;
+  background-color: black;
+  width: 0;
+  opacity: 0;
+  transition: width 1s ease-out, opacity 0.5s ease-out;
+  z-index: 5;
+  transform: translate(-50%, calc(0% + 200px));
 }
 
-/* Add a new class to trigger the exit animation */
-.title-text.exit-left {
-  /* Apply the animation */
-  /* Adjust duration (1.5s) and timing function (ease-in) as needed */
-  animation: exitLeft 1.5s ease-in forwards;
-  /* The delay before this animation starts needs to be handled in JavaScript */
-  /* For example, add this class using setTimeout after the fade-in completes */
+.horizontal-line.visible {
+  width: 85%;
+  opacity: 1;
+}
+
+/* Welcome text styles */
+.welcome-text {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 4vw;
+  line-height: 1.2em;
+  letter-spacing: -4px;
+  text-align: left;
+  color: #000000;
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 1s ease-out, filter 1.5s ease-out;
+  padding: 150px 0;
+}
+
+/* Second horizontal line for bottom border */
+.horizontal-line-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 1px;
+  background-color: black;
+  width: 0;
+  opacity: 0;
+  transition: width 1s ease-out, opacity 0.5s ease-out;
+  z-index: 5;
+  transform: translateX(-50%);
+}
+
+.horizontal-line.visible ~ .welcome-text,
+.horizontal-line.visible + .welcome-text,
+.horizontal-line.visible .welcome-text {
+  /* Removed visibility trigger for welcome-text */
+}
+
+.welcome-text.visible {
+  opacity: 1;
+  filter: blur(0px);
+}
+
+.horizontal-line.visible,
+.horizontal-line-bottom.visible {
+  opacity: 1;
+  width: 85vw;
 }
 
