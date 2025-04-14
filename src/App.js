@@ -326,7 +326,7 @@ function App() {
         </div>
       )}
 
-      <div style={{ height: '700vh' }}></div>
+      <div style={{ height: '550vh' }}></div>
     </div>
   );
 }
