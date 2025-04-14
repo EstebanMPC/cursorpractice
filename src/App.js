@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.css';
 import BirdLogo from './assets/bird-svgrepo-com.svg';
 import RoseLogo from './assets/rose-svgrepo-com.svg';
 import CardinalImage from './assets/cardinal.jpg';
 
 function App() {
+  const [showPaywall, setShowPaywall] = useState(false);
+
   useEffect(() => {
     // Store references to elements to avoid repeated querying
     const birdImage = document.querySelector('.bird-image');
@@ -78,25 +80,28 @@ function App() {
       const horizontalLineBottom = document.querySelector('.horizontal-line-bottom');
 
       if (horizontalLine) {
-        // Calculate line's vertical position using a fixed offset from title's initial position
-        let lineTranslateY = `calc(-50% + 50vh)`;
-        // Adjust for scroll position to keep constant distance
+        // Calculate line's vertical position, adding 300px offset
+        let lineTranslateY = `calc(-50% + 50vh + 300px)`; // Added + 300px
+        // Adjust for scroll position to keep constant distance, maintaining the offset
         if (scrollPosition > titleExitUpStartScroll) {
           let upwardShift = scrollPosition - titleExitUpStartScroll;
-          lineTranslateY = `calc(-50% + 50vh - ${upwardShift}px)`;
+          lineTranslateY = `calc(-50% + 50vh + 300px - ${upwardShift}px)`; // Added + 300px
         }
 
         // Apply centering transform (translateX) and the fixed vertical transform (translateY)
         horizontalLine.style.transform = `translate(-50%, ${lineTranslateY})`;
 
         // Calculate the trigger point based on the position of the horizontal line element
-        let lineTriggerScroll = viewportHeight * 0.5;
+        // This calculation might need adjustment if the line's new position affects timing
+        let lineTriggerScroll = viewportHeight * 0.5 + 300; // Adjust trigger based on new position
         if (horizontalLine) {
           const rect = horizontalLine.getBoundingClientRect();
-          lineTriggerScroll = rect.top + window.scrollY - viewportHeight * 0.3;
+          // Recalculate trigger based on the actual element position relative to viewport center/bottom
+          // Let's trigger when the line is about 30% from the bottom instead of 30% from the top
+          lineTriggerScroll = rect.top + window.scrollY - viewportHeight * 0.7; 
         }
 
-        // Apply fade-in effect when the line is near the middle of the viewport
+        // Apply fade-in effect when the line is near the middle/bottom of the viewport
         if (scrollPosition > lineTriggerScroll) {
           horizontalLine.classList.add('visible');
           if (horizontalLineBottom) {
@@ -168,16 +173,41 @@ function App() {
             // Increase opacity of centered-border-div-outline as user scrolls further
             const outlineDiv = document.querySelector('.centered-border-div-outline');
             if (outlineDiv) {
-              // Calculate opacity based on scroll progress after text blur-out
-              const maxOpacityScroll = viewportHeight * 3; // Keep the same range for fade-in duration
-              const scrollSinceBlur = scrollPosition - backgroundFadeOutTriggerScroll - (scrollPastTrigger / (viewportHeight * 2));
-              const linearProgress = Math.min(Math.max(scrollSinceBlur / maxOpacityScroll, 0), 1);
-              // Use a smoother curve for gradual darkening at the start
-              // Using a quadratic curve instead of square root for a more gradual initial increase
-              const opacityProgress = linearProgress * linearProgress;
+              // Calculate scroll position when blur starts (scaleFactor hits 1.2)
+              const blurStartScrollOffset = 1.2 * viewportHeight; // Scroll distance past backgroundFadeOutTriggerScroll when scaleFactor = 1.2
+              const blurStartScrollPosition = backgroundFadeOutTriggerScroll + blurStartScrollOffset;
+
+              // Define how much further to scroll for full opacity (e.g., 1 viewport height)
+              const opacityDurationScroll = viewportHeight * 1;
+
+              // Calculate progress towards full opacity
+              const scrollSinceBlurStart = Math.max(0, scrollPosition - blurStartScrollPosition);
+              const opacityProgress = Math.min(scrollSinceBlurStart / opacityDurationScroll, 1);
+
               outlineDiv.style.opacity = opacityProgress;
               console.log('Outline opacity:', opacityProgress); // Debug log
+
+              // Trigger Paywall when opacity reaches 1
+              if (opacityProgress >= 1 && !showPaywall) {
+                  setShowPaywall(true);
+              } else if (opacityProgress < 1 && showPaywall) { // Hide if scrolling back up before full opacity
+                  setShowPaywall(false);
+              }
             }
+          } else {
+             // If scaleFactor > 1.2, ensure text is not blurred out
+             if (everythingText) everythingText.classList.remove('blur-out');
+             if (isText) isText.classList.remove('blur-out');
+             if (computerText) computerText.classList.remove('blur-out');
+             // Also hide paywall if scrolling back up before blur starts
+             if (showPaywall) {
+                 setShowPaywall(false);
+             }
+             // Reset outline opacity if needed
+             const outlineDiv = document.querySelector('.centered-border-div-outline');
+             if (outlineDiv) {
+                 outlineDiv.style.opacity = 0;
+             }
           }
           // Show background overlay much later (e.g., when scaleFactor is below 0.6, adjusted for longer scroll)
           if (scaleFactor < 0.6 && backgroundOverlay) {
@@ -189,10 +219,19 @@ function App() {
           backgroundImage.classList.remove('visible');
           borderDiv.classList.remove('visible');
           borderDiv.style.transform = 'translate(-50%, -50%) scale(2.2)';
-          if (everythingText) everythingText.classList.remove('visible');
-          if (isText) isText.classList.remove('visible');
-          if (computerText) computerText.classList.remove('visible');
+          if (everythingText) everythingText.classList.remove('visible', 'blur-out'); // Remove blur-out class here too
+          if (isText) isText.classList.remove('visible', 'blur-out');
+          if (computerText) computerText.classList.remove('visible', 'blur-out');
           if (backgroundOverlay) backgroundOverlay.classList.remove('visible');
+          // Ensure paywall is hidden if scrolling back up before the trigger point
+          if (showPaywall) {
+              setShowPaywall(false);
+          }
+           // Reset outline opacity if needed when scrolling back up fully
+           const outlineDiv = document.querySelector('.centered-border-div-outline');
+           if (outlineDiv) {
+               outlineDiv.style.opacity = 0;
+           }
         }
       }
 
@@ -220,10 +259,10 @@ function App() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [showPaywall]);
 
   return (
-    <div className="App">
+    <div className={`App ${showPaywall ? 'blur-background' : ''}`}>
       <div className="reveal-background"></div>
       <img src={CardinalImage} alt="Cardinal Background" className="background-image" />
       <div className="background-overlay"></div>
@@ -273,6 +312,20 @@ function App() {
         <div className="is-text">IS</div>
         <div className="computer-text">COMPUTER</div>
       </main>
+
+      {showPaywall && (
+        <div className="paywall-popup">
+          <h2>PAYWALL</h2>
+          <p>$35 per month</p>
+          <p>Enjoy unlimited access</p>
+          <div className="email-input-container">
+            <label htmlFor="paywall-email">Email</label>
+            <input type="email" id="paywall-email" name="email" placeholder="your.email@example.com" />
+            <button className="paywall-button">Sign up lmao</button>
+          </div>
+        </div>
+      )}
+
       <div style={{ height: '700vh' }}></div>
     </div>
   );
